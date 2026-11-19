@@ -14,19 +14,17 @@
 
 - C# / .NET 8（`net8.0`）
 - Hyper-V
-- 项目：`src/src/WinVM.csproj`
+- 项目：`WinVM.csproj`
 
 ## 从源码运行
 
-源码在 `src/src/`。本仓库不包含安装包。需要 Windows，并已启用 Hyper-V。
+源码在仓库根目录。本仓库不包含安装包。需要 Windows，并已启用 Hyper-V。
 
 ```bash
-cd src/src
 dotnet build WinVM.csproj -c Release
 dotnet run --project WinVM.csproj
 ```
-
-说明见 `README.zh-CN.md`（与 `src/src/README.zh-CN.md` 内容相同）。
+说明见 `README.zh-CN.md`。
 
 ## 文档
 
@@ -52,19 +50,17 @@ dotnet run --project WinVM.csproj
 
 - C# / .NET 8（`net8.0`）
 - Hyper-V
-- 项目：`src/src/WinVM.csproj`
+- 项目：`WinVM.csproj`
 
 ## Getting started
 
-Source is under `src/src/`. This repository does not include installers. Windows with Hyper-V enabled is required.
+Source is at the repository root. This repository does not include installers. Windows with Hyper-V enabled is required.
 
 ```bash
-cd src/src
 dotnet build WinVM.csproj -c Release
 dotnet run --project WinVM.csproj
 ```
-
-See `README.zh-CN.md` (same content as `src/src/README.zh-CN.md`).
+See `README.zh-CN.md`.
 
 ## Documentation
 
