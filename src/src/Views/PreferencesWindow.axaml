@@ -1,0 +1,94 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:WinVM.ViewModels"
+        xmlns:c="using:WinVM.Controls"
+        x:Class="WinVM.Views.PreferencesWindow"
+        x:DataType="vm:PreferencesViewModel"
+        Title="偏好设置" Icon="/Assets/winvm.ico"
+        Width="640" SizeToContent="Height" CanResize="False" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel>
+    <Border DockPanel.Dock="Top" Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}"
+            BorderThickness="0,0,0,1" Padding="24,16">
+      <Grid ColumnDefinitions="Auto,*">
+        <Border Width="40" Height="40" CornerRadius="8" Background="{DynamicResource App.Accent}">
+          <c:IconView Data="{StaticResource I.Settings}" Width="22" Height="22" StrokeThickness="1.8" Foreground="{DynamicResource App.OnAccent}" />
+        </Border>
+        <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center" Spacing="2">
+          <TextBlock Text="偏好设置" Classes="dlgTitle" />
+          <TextBlock Text="外观、启动方式、托盘与通知。修改在点击「确定」后生效。" Classes="caption" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Border DockPanel.Dock="Bottom" Classes="footer">
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+        <Button x:Name="OkButton" Classes="dlg accent" Content="确定" IsDefault="True" Command="{Binding OkCommand}" />
+        <Button Classes="dlg" Content="取消" IsCancel="True" Command="{Binding CancelCommand}" />
+      </StackPanel>
+    </Border>
+
+    <StackPanel Margin="24,16,24,18" Spacing="14">
+      <!-- 外观 -->
+      <StackPanel Spacing="8">
+        <TextBlock Text="外观" Classes="section" />
+        <Grid ColumnDefinitions="150,*">
+          <TextBlock Classes="formLabel" Text="主题" />
+          <ComboBox Grid.Column="1" Width="200" ItemsSource="{x:Static vm:PreferencesViewModel.ThemeNames}" SelectedIndex="{Binding ThemeIndex}"
+                    AutomationProperties.Name="主题" />
+        </Grid>
+      </StackPanel>
+      <Rectangle Height="1" Fill="{DynamicResource App.Border}" />
+
+      <!-- 启动 -->
+      <StackPanel Spacing="6">
+        <TextBlock Text="启动" Classes="section" />
+        <CheckBox x:Name="AutoElevateBox" Content="以后启动时自动请求管理员权限" IsChecked="{Binding AutoElevate}" />
+        <TextBlock Classes="caption" TextWrapping="Wrap" Margin="28,0,0,0"
+                   Text="管理 Hyper-V 通常需要管理员权限。开启后 WinVM 启动时会自动以管理员身份运行（可能出现 UAC 确认）；当前用户已在「Hyper-V Administrators」组时可关闭。" />
+        <TextBlock Classes="caption" Margin="28,0,0,0" Text="{Binding ElevationStateText}" />
+      </StackPanel>
+      <Rectangle Height="1" Fill="{DynamicResource App.Border}" />
+
+      <!-- 托盘与通知 -->
+      <StackPanel Spacing="6">
+        <TextBlock Text="托盘与通知" Classes="section" />
+        <CheckBox Content="在通知区域显示 WinVM 图标（可快速启动、关机、打开控制台）" IsChecked="{Binding ShowTrayIcon}" />
+        <CheckBox Content="关闭窗口时最小化到托盘" IsChecked="{Binding MinimizeToTray}" IsEnabled="{Binding CanMinimizeToTray}" Margin="28,0,0,0" />
+        <TextBlock Classes="caption" TextWrapping="Wrap" Margin="56,0,0,0"
+                   Text="开启后点击窗口的关闭按钮只会隐藏窗口，WinVM 继续在后台运行；从托盘菜单或「文件 → 退出」可完全退出。" />
+        <CheckBox Content="长时间操作完成时显示通知（克隆、导出、导入、镜像下载等）" IsChecked="{Binding ShowNotifications}" />
+      </StackPanel>
+      <Rectangle Height="1" Fill="{DynamicResource App.Border}" />
+
+      <!-- 数据 -->
+      <StackPanel Spacing="8">
+        <TextBlock Text="数据与刷新" Classes="section" />
+        <Grid ColumnDefinitions="150,*">
+          <TextBlock Classes="formLabel" Text="自动刷新间隔" />
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+            <ComboBox Width="200" ItemsSource="{x:Static vm:PreferencesViewModel.RefreshNames}" SelectedIndex="{Binding RefreshIndex}"
+                      AutomationProperties.Name="自动刷新间隔" />
+            <TextBlock Classes="caption" VerticalAlignment="Center" Text="同时决定性能曲线的采样间隔" />
+          </StackPanel>
+        </Grid>
+        <Grid ColumnDefinitions="150,*,Auto,Auto">
+          <TextBlock Classes="formLabel" Text="镜像下载位置" />
+          <TextBox Grid.Column="1" Text="{Binding IsoFolder}" IsReadOnly="True" AutomationProperties.Name="镜像下载位置" />
+          <Button Grid.Column="2" Content="更改…" Margin="8,0,0,0" Command="{Binding BrowseIsoFolderCommand}" />
+          <Button Grid.Column="3" Content="默认" Margin="6,0,0,0" Command="{Binding ResetIsoFolderCommand}" ToolTip.Tip="恢复为 %USERPROFILE%\WinVM\ISO" />
+        </Grid>
+        <Grid ColumnDefinitions="150,*,Auto">
+          <TextBlock Classes="formLabel" Text="虚拟机存储位置" />
+          <TextBlock Grid.Column="1" Text="{Binding StorePath}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+          <Button Grid.Column="2" Content="打开" Margin="8,0,0,0" Command="{Binding OpenStoreFolderCommand}" />
+        </Grid>
+        <Grid ColumnDefinitions="150,*,Auto">
+          <TextBlock Classes="formLabel" Text="日志" />
+          <TextBlock Grid.Column="1" Text="{Binding LogFolder}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+          <Button Grid.Column="2" Content="打开" Margin="8,0,0,0" Command="{Binding OpenLogFolderCommand}" />
+        </Grid>
+      </StackPanel>
+    </StackPanel>
+  </DockPanel>
+</Window>

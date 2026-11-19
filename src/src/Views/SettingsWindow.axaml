@@ -1,0 +1,80 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:WinVM.ViewModels"
+        xmlns:c="using:WinVM.Controls"
+        x:Class="WinVM.Views.SettingsWindow"
+        x:DataType="vm:SettingsViewModel"
+        Title="{Binding Title}" Icon="/Assets/winvm.ico"
+        Width="580" SizeToContent="Height" CanResize="False" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel>
+    <Border DockPanel.Dock="Top" Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}"
+            BorderThickness="0,0,0,1" Padding="24,18">
+      <Grid ColumnDefinitions="Auto,*">
+        <Border Width="40" Height="40" CornerRadius="8" Background="{DynamicResource App.SurfaceAlt}">
+          <c:IconView Data="{StaticResource I.Settings}" Width="22" Height="22" />
+        </Border>
+        <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center" Spacing="2">
+          <TextBlock Text="{Binding VmName}" Classes="dlgTitle" TextTrimming="CharacterEllipsis" />
+          <TextBlock Text="虚拟机设置 · 仅在已关机时可修改" Classes="caption" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Border DockPanel.Dock="Bottom" Classes="footer">
+      <Grid ColumnDefinitions="*,Auto">
+        <ProgressBar IsIndeterminate="True" Width="90" MinWidth="90" Height="3" HorizontalAlignment="Left" IsVisible="{Binding IsBusy}" />
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+          <Button Classes="dlg accent" Content="保存" IsDefault="True" Command="{Binding SaveCommand}" IsEnabled="{Binding !IsBusy}" />
+          <Button Classes="dlg" Content="取消" IsCancel="True" Command="{Binding CancelCommand}" IsEnabled="{Binding !IsBusy}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Grid Margin="24,18,24,16" ColumnDefinitions="110,*" IsEnabled="{Binding !IsBusy}">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" /><RowDefinition Height="12" />
+        <RowDefinition Height="Auto" /><RowDefinition Height="12" />
+        <RowDefinition Height="Auto" /><RowDefinition Height="12" />
+        <RowDefinition Height="Auto" /><RowDefinition Height="16" />
+        <RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+
+      <TextBlock Grid.Row="0" Classes="formLabel" Text="处理器" />
+      <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="10">
+        <NumericUpDown Value="{Binding ProcessorCount}" Minimum="1" Maximum="{Binding MaxCpu}" Increment="1" FormatString="0" Width="140" />
+        <TextBlock Text="个虚拟处理器" Classes="caption" VerticalAlignment="Center" />
+      </StackPanel>
+
+      <TextBlock Grid.Row="2" Classes="formLabel" Text="启动内存" />
+      <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="10">
+        <NumericUpDown Value="{Binding MemoryGiB}" Minimum="0.5" Maximum="256" Increment="0.5" FormatString="0.##" Width="140" />
+        <TextBlock Text="GiB（自动对齐到 2 MiB；动态内存见「高级设置」）" Classes="caption" VerticalAlignment="Center" />
+      </StackPanel>
+
+      <TextBlock Grid.Row="4" Classes="formLabel" Text="DVD / ISO" />
+      <Grid Grid.Row="4" Grid.Column="1" ColumnDefinitions="*,Auto,Auto">
+        <TextBox Text="{Binding IsoPath}" Watermark="（未挂载）" IsReadOnly="True" />
+        <Button Grid.Column="1" Content="浏览…" Margin="8,0,0,0" Command="{Binding BrowseIsoCommand}" />
+        <Button Grid.Column="2" Content="弹出" Margin="6,0,0,0" Command="{Binding ClearIsoCommand}" />
+      </Grid>
+
+      <TextBlock Grid.Row="6" Classes="formLabel" Text="网络" />
+      <ComboBox Grid.Row="6" Grid.Column="1" ItemsSource="{Binding Switches}" SelectedItem="{Binding SelectedSwitch}" HorizontalAlignment="Stretch" />
+
+      <Border Grid.Row="8" Grid.ColumnSpan="2" Background="{DynamicResource App.SurfaceAlt}" CornerRadius="6" Padding="14,10">
+        <Grid ColumnDefinitions="96,*" RowDefinitions="Auto,Auto,Auto">
+          <TextBlock Classes="k" Text="代数" />
+          <TextBlock Grid.Column="1" Classes="v" Text="{Binding GenerationText}" />
+          <TextBlock Grid.Row="1" Classes="k" Text="虚拟硬盘" />
+          <TextBlock Grid.Row="1" Grid.Column="1" Classes="v" Text="{Binding DiskText}" />
+          <TextBlock Grid.Row="2" Classes="k" Text="磁盘文件" />
+          <SelectableTextBlock Grid.Row="2" Grid.Column="1" Classes="v" Text="{Binding VhdPath}" />
+        </Grid>
+      </Border>
+
+      <TextBlock Grid.Row="9" Grid.ColumnSpan="2" Text="{Binding ErrorText}" Classes="error" Margin="0,12,0,0"
+                 IsVisible="{Binding ErrorText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+    </Grid>
+  </DockPanel>
+</Window>

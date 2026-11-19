@@ -1,0 +1,133 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:WinVM.ViewModels"
+        xmlns:c="using:WinVM.Controls"
+        x:Class="WinVM.Views.CreateVmWindow"
+        x:DataType="vm:CreateVmViewModel"
+        Title="新建虚拟机" Icon="/Assets/winvm.ico"
+        Width="680" SizeToContent="Height" CanResize="False" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel>
+    <!-- Header -->
+    <Border DockPanel.Dock="Top" Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}"
+            BorderThickness="0,0,0,1" Padding="24,18">
+      <Grid ColumnDefinitions="Auto,*">
+        <Border Width="40" Height="40" CornerRadius="8" Background="{DynamicResource App.Accent}">
+          <c:IconView Data="{StaticResource I.Add}" Width="22" Height="22" StrokeThickness="2" Foreground="{DynamicResource App.OnAccent}" />
+        </Border>
+        <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center" Spacing="2">
+          <TextBlock Text="新建虚拟机" Classes="dlgTitle" />
+          <TextBlock Text="创建第 2 代 Hyper-V 虚拟机，支持 Linux 与 Windows 安装镜像。" Classes="caption" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- Footer -->
+    <Border DockPanel.Dock="Bottom" Classes="footer">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" IsVisible="{Binding IsBusy}">
+          <ProgressBar IsIndeterminate="True" Width="90" MinWidth="90" Height="3" />
+          <TextBlock Text="{Binding ProgressText}" Classes="caption" />
+        </StackPanel>
+        <TextBlock Text="{Binding ProgressText}" Classes="caption" VerticalAlignment="Center" IsVisible="{Binding !IsBusy}" TextTrimming="CharacterEllipsis" />
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+          <Button Classes="dlg accent" Content="创建" IsDefault="True" Command="{Binding CreateCommand}" IsEnabled="{Binding !IsBusy}" />
+          <Button Classes="dlg" Content="取消" IsCancel="True" Command="{Binding CancelCommand}" IsEnabled="{Binding !IsBusy}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- Form -->
+    <Grid Margin="24,18,24,16" ColumnDefinitions="110,*" IsEnabled="{Binding !IsBusy}">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" /><RowDefinition Height="12" />
+        <RowDefinition Height="Auto" /><RowDefinition Height="12" />
+        <RowDefinition Height="Auto" /><RowDefinition Height="12" />
+        <RowDefinition Height="Auto" /><RowDefinition Height="12" />
+        <RowDefinition Height="Auto" /><RowDefinition Height="12" />
+        <RowDefinition Height="Auto" /><RowDefinition Height="12" />
+        <RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+
+      <TextBlock Grid.Row="0" Classes="formLabel" Text="名称" />
+      <StackPanel Grid.Row="0" Grid.Column="1" Spacing="4">
+        <TextBox x:Name="NameBox" Text="{Binding Name}" Watermark="虚拟机名称（不能与现有虚拟机重复）" MaxLength="100" />
+        <TextBlock Text="{Binding StorePathText, StringFormat='保存位置：{0}'}" Classes="caption" FontSize="11.5" TextTrimming="CharacterEllipsis" />
+      </StackPanel>
+
+      <TextBlock Grid.Row="2" Classes="formLabel" Text="操作系统" />
+      <StackPanel Grid.Row="2" Grid.Column="1" Spacing="4">
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <ComboBox SelectedIndex="{Binding OsIndex}" Width="160" AutomationProperties.Name="操作系统">
+            <ComboBoxItem Content="Linux" />
+            <ComboBoxItem Content="Windows" />
+          </ComboBox>
+          <TextBlock Text="预设" Classes="caption" VerticalAlignment="Center" />
+          <ComboBox ItemsSource="{Binding Presets}" SelectedIndex="{Binding PresetIndex}" Width="170" AutomationProperties.Name="预设" />
+        </StackPanel>
+        <TextBlock Text="{Binding FirmwareText}" Classes="caption" FontSize="11.5" TextWrapping="Wrap" />
+      </StackPanel>
+
+      <TextBlock Grid.Row="4" Classes="formLabel" Text="处理器" />
+      <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" Spacing="10">
+        <NumericUpDown Value="{Binding ProcessorCount}" Minimum="1" Maximum="{Binding MaxCpu}" Increment="1" FormatString="0" Width="140" />
+        <TextBlock Text="{Binding MaxCpu, StringFormat='个虚拟处理器（主机共 {0} 个）'}" Classes="caption" VerticalAlignment="Center" />
+      </StackPanel>
+
+      <TextBlock Grid.Row="6" Classes="formLabel" Text="内存" />
+      <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal" Spacing="10">
+        <NumericUpDown Value="{Binding MemoryGiB}" Minimum="0.5" Maximum="256" Increment="1" FormatString="0.#" Width="140" />
+        <TextBlock Text="GiB（固定内存）" Classes="caption" VerticalAlignment="Center" />
+      </StackPanel>
+
+      <TextBlock Grid.Row="8" Classes="formLabel" Text="虚拟硬盘" />
+      <StackPanel Grid.Row="8" Grid.Column="1" Orientation="Horizontal" Spacing="10">
+        <NumericUpDown Value="{Binding DiskGiB}" Minimum="1" Maximum="4096" Increment="8" FormatString="0" Width="140" />
+        <TextBlock Text="GiB（动态扩展 VHDX）" Classes="caption" VerticalAlignment="Center" />
+      </StackPanel>
+
+      <TextBlock Grid.Row="10" Classes="formLabel" Text="安装镜像" VerticalAlignment="Top" Margin="0,6,16,0" />
+      <StackPanel Grid.Row="10" Grid.Column="1" Spacing="6">
+        <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+          <TextBox Text="{Binding IsoPath}" Watermark="可选：选择 .iso（留空则稍后在设置中挂载）" IsReadOnly="True" AutomationProperties.Name="安装镜像路径" />
+          <Button Grid.Column="1" Margin="8,0,0,0" Command="{Binding BrowseGalleryCommand}" IsVisible="{Binding HasGallery}"
+                  ToolTip.Tip="从系统镜像库下载官方 Linux 镜像">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <c:IconView Data="{StaticResource I.Disc}" />
+              <TextBlock Text="镜像库…" />
+            </StackPanel>
+          </Button>
+          <Button Grid.Column="2" Content="本地 ISO…" Margin="6,0,0,0" Command="{Binding BrowseIsoCommand}" />
+          <Button Grid.Column="3" Content="最近" Margin="6,0,0,0" IsEnabled="{Binding HasRecentIsos}" x:Name="RecentButton">
+            <Button.Flyout>
+              <Flyout Placement="BottomEdgeAlignedRight">
+                <ItemsControl ItemsSource="{Binding RecentIsos}" MaxWidth="520">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                      <Button Classes="tool" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Content="{Binding}"
+                              Command="{Binding $parent[Window].((vm:CreateVmViewModel)DataContext).UseRecentIsoCommand}"
+                              CommandParameter="{Binding}" Click="OnRecentClicked" />
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </Flyout>
+            </Button.Flyout>
+          </Button>
+        </Grid>
+        <TextBlock Text="{Binding ImageHint}" Classes="caption" FontSize="11.5" TextWrapping="Wrap"
+                   IsVisible="{Binding ImageHint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      </StackPanel>
+
+      <TextBlock Grid.Row="12" Classes="formLabel" Text="网络" />
+      <Grid Grid.Row="12" Grid.Column="1" ColumnDefinitions="*,Auto">
+        <ComboBox ItemsSource="{Binding Switches}" SelectedItem="{Binding SelectedSwitch}" HorizontalAlignment="Stretch" />
+        <Button Grid.Column="1" Margin="8,0,0,0" Command="{Binding RefreshSwitchesCommand}" ToolTip.Tip="重新读取虚拟交换机">
+          <c:IconView Data="{StaticResource I.Refresh}" />
+        </Button>
+      </Grid>
+
+      <TextBlock Grid.Row="13" Grid.Column="1" Text="{Binding ErrorText}" Classes="error" Margin="0,12,0,0"
+                 IsVisible="{Binding ErrorText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+    </Grid>
+  </DockPanel>
+</Window>

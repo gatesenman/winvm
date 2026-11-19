@@ -1,0 +1,21 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="using:WinVM.Controls"
+        x:Class="WinVM.Views.ShortcutsWindow"
+        Title="键盘快捷键" Icon="/Assets/winvm.ico"
+        Width="460" SizeToContent="Height" CanResize="False" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel>
+    <Border DockPanel.Dock="Bottom" Classes="footer">
+      <Button Classes="dlg accent" Content="关闭" IsDefault="True" IsCancel="True" HorizontalAlignment="Right" Click="OnClose" />
+    </Border>
+    <StackPanel Margin="24,18,24,16" Spacing="12">
+      <StackPanel Orientation="Horizontal" Spacing="10">
+        <c:IconView Data="{StaticResource I.Keyboard}" Width="22" Height="22" Foreground="{DynamicResource App.Accent}" />
+        <TextBlock Text="键盘快捷键" Classes="dlgTitle" VerticalAlignment="Center" />
+      </StackPanel>
+      <ItemsControl x:Name="List" />
+      <TextBlock Classes="caption" TextWrapping="Wrap" Text="在虚拟机列表中：双击或按 Enter 连接控制台，Delete 删除；右键可打开更多操作。" />
+    </StackPanel>
+  </DockPanel>
+</Window>

@@ -1,0 +1,173 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:WinVM.ViewModels"
+        xmlns:m="using:WinVM.Models"
+        xmlns:c="using:WinVM.Controls"
+        x:Class="WinVM.Views.AdvancedSettingsWindow"
+        x:DataType="vm:AdvancedSettingsViewModel"
+        Title="{Binding Title}" Icon="/Assets/winvm.ico"
+        Width="700" Height="560" MinWidth="620" MinHeight="500" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+  <Window.Styles>
+    <Style Selector="TabControl#Tabs > TabItem">
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="MinHeight" Value="38" />
+      <Setter Property="Padding" Value="12,0" />
+      <Setter Property="MinWidth" Value="96" />
+    </Style>
+  </Window.Styles>
+  <DockPanel>
+    <Border DockPanel.Dock="Top" Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}"
+            BorderThickness="0,0,0,1" Padding="24,16">
+      <Grid ColumnDefinitions="Auto,*">
+        <Border Width="40" Height="40" CornerRadius="8" Background="{DynamicResource App.SurfaceAlt}">
+          <c:IconView Data="{StaticResource I.Shield}" Width="22" Height="22" />
+        </Border>
+        <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center" Spacing="2">
+          <TextBlock Text="{Binding VmName}" Classes="dlgTitle" TextTrimming="CharacterEllipsis" />
+          <TextBlock Text="{Binding StateHint}" Classes="caption" TextWrapping="Wrap" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Border DockPanel.Dock="Bottom" Classes="footer">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Orientation="Vertical" Spacing="4" VerticalAlignment="Center">
+          <ProgressBar IsIndeterminate="True" Width="90" MinWidth="90" Height="3" HorizontalAlignment="Left" IsVisible="{Binding IsBusy}" />
+          <TextBlock Text="{Binding ErrorText}" Classes="error" TextWrapping="Wrap" MaxWidth="440"
+                     IsVisible="{Binding ErrorText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+          <Button Classes="dlg accent" Content="保存" IsDefault="True" Command="{Binding SaveCommand}" IsEnabled="{Binding CanEditAlways}" />
+          <Button Classes="dlg" Content="取消" IsCancel="True" Command="{Binding CancelCommand}" IsEnabled="{Binding !IsBusy}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Panel>
+      <TabControl x:Name="Tabs" SelectedIndex="{Binding SelectedTab}" Margin="16,8,16,0" TabStripPlacement="Left" Padding="18,6,4,6">
+        <!-- 安全 -->
+        <TabItem Header="安全">
+          <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="12" IsEnabled="{Binding CanEditFirmware}">
+              <TextBlock Text="安全启动与 TPM" FontWeight="SemiBold" FontSize="15" />
+              <CheckBox Content="启用安全启动（Secure Boot）" IsChecked="{Binding SecureBoot}" />
+              <Grid ColumnDefinitions="110,*" IsEnabled="{Binding SecureBoot}">
+                <TextBlock Classes="formLabel" Text="模板" />
+                <ComboBox Grid.Column="1" ItemsSource="{Binding TemplateNames}" SelectedIndex="{Binding TemplateIndex}" HorizontalAlignment="Stretch" />
+              </Grid>
+              <CheckBox Content="启用受信任的平台模块（虚拟 TPM）" IsChecked="{Binding Tpm}" />
+              <TextBlock Classes="caption" TextWrapping="Wrap"
+                         Text="启用 TPM 时会为该虚拟机创建本地密钥保护器（Set-VMKeyProtector -NewLocalKeyProtector）。" />
+              <Border Background="{DynamicResource App.SurfaceAlt}" CornerRadius="6" Padding="12,10">
+                <TextBlock Text="{Binding FirmwareHint}" TextWrapping="Wrap" Classes="caption" />
+              </Border>
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
+
+        <!-- 内存 -->
+        <TabItem Header="内存">
+          <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="12" IsEnabled="{Binding CanEditOffOnly}">
+              <TextBlock Text="动态内存" FontWeight="SemiBold" FontSize="15" />
+              <TextBlock Text="{Binding StartupText}" Classes="caption" />
+              <CheckBox Content="启用动态内存（按需在最小与最大值之间分配）" IsChecked="{Binding DynamicMemory}" />
+              <Grid ColumnDefinitions="110,Auto,*" RowDefinitions="Auto,10,Auto,10,Auto" IsEnabled="{Binding DynamicMemory}">
+                <TextBlock Classes="formLabel" Text="最小内存" />
+                <NumericUpDown Grid.Column="1" Value="{Binding MinimumMiB}" Minimum="32" Maximum="262144" Increment="256" FormatString="0" Width="160" />
+                <TextBlock Grid.Column="2" Text="MiB" Classes="caption" Margin="8,0,0,0" VerticalAlignment="Center" />
+                <TextBlock Grid.Row="2" Classes="formLabel" Text="最大内存" />
+                <NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding MaximumMiB}" Minimum="32" Maximum="1048576" Increment="1024" FormatString="0" Width="160" />
+                <TextBlock Grid.Row="2" Grid.Column="2" Text="MiB" Classes="caption" Margin="8,0,0,0" VerticalAlignment="Center" />
+                <TextBlock Grid.Row="4" Classes="formLabel" Text="内存缓冲区" />
+                <NumericUpDown Grid.Row="4" Grid.Column="1" Value="{Binding Buffer}" Minimum="5" Maximum="2000" Increment="5" FormatString="0" Width="160" />
+                <TextBlock Grid.Row="4" Grid.Column="2" Text="%" Classes="caption" Margin="8,0,0,0" VerticalAlignment="Center" />
+              </Grid>
+              <TextBlock Classes="caption" TextWrapping="Wrap" Text="启动内存必须介于最小与最大内存之间；数值会自动对齐到 2 MiB。启用嵌套虚拟化时必须关闭动态内存。" />
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
+
+        <!-- 启动顺序 -->
+        <TabItem Header="启动顺序">
+          <DockPanel IsEnabled="{Binding CanEditFirmware}">
+            <TextBlock DockPanel.Dock="Top" Text="固件启动顺序" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,4" />
+            <TextBlock DockPanel.Dock="Top" Classes="caption" TextWrapping="Wrap" Margin="0,0,0,10"
+                       Text="从上到下依次尝试。可拖动条目，或选中后使用右侧按钮调整。" />
+            <StackPanel DockPanel.Dock="Right" Spacing="8" Margin="10,0,0,0">
+              <Button Content="上移" Width="80" Command="{Binding MoveBootUpCommand}" />
+              <Button Content="下移" Width="80" Command="{Binding MoveBootDownCommand}" />
+            </StackPanel>
+            <ListBox x:Name="BootList" ItemsSource="{Binding BootOrder}" SelectedItem="{Binding SelectedBoot}" MinHeight="160"
+                     AutomationProperties.Name="启动顺序">
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="m:BootEntry">
+                  <StackPanel Orientation="Horizontal" Spacing="10" Background="Transparent">
+                    <TextBlock Text="≡" Opacity="0.5" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding Display}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                  </StackPanel>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </DockPanel>
+        </TabItem>
+
+        <!-- 处理器 -->
+        <TabItem Header="处理器">
+          <StackPanel Spacing="12" IsEnabled="{Binding CanEditOffOnly}">
+            <TextBlock Text="嵌套虚拟化" FontWeight="SemiBold" FontSize="15" />
+            <CheckBox Content="向虚拟机公开虚拟化扩展（可在虚拟机内运行 Hyper-V / WSL2 / Docker）" IsChecked="{Binding Nested}" />
+            <Border Background="{DynamicResource App.SurfaceAlt}" CornerRadius="6" Padding="12,10" IsVisible="{Binding NestedConflict}">
+              <TextBlock Text="嵌套虚拟化要求关闭动态内存：请在「内存」页取消动态内存。" TextWrapping="Wrap" Foreground="{DynamicResource App.Danger}" />
+            </Border>
+            <TextBlock Classes="caption" TextWrapping="Wrap" Text="处理器数量请在「设置」中修改。" />
+          </StackPanel>
+        </TabItem>
+
+        <!-- 自动操作 -->
+        <TabItem Header="自动操作">
+          <StackPanel Spacing="12" IsEnabled="{Binding CanEditAlways}">
+            <TextBlock Text="主机启动 / 关闭时" FontWeight="SemiBold" FontSize="15" />
+            <Grid ColumnDefinitions="110,*" RowDefinitions="Auto,10,Auto,10,Auto">
+              <TextBlock Classes="formLabel" Text="自动启动" />
+              <ComboBox Grid.Column="1" ItemsSource="{Binding StartActionNames}" SelectedIndex="{Binding StartActionIndex}" HorizontalAlignment="Stretch" />
+              <TextBlock Grid.Row="2" Classes="formLabel" Text="启动延迟" />
+              <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                <NumericUpDown Value="{Binding StartDelay}" Minimum="0" Maximum="86400" Increment="10" FormatString="0" Width="160" />
+                <TextBlock Text="秒" Classes="caption" VerticalAlignment="Center" />
+              </StackPanel>
+              <TextBlock Grid.Row="4" Classes="formLabel" Text="自动停止" />
+              <ComboBox Grid.Row="4" Grid.Column="1" ItemsSource="{Binding StopActionNames}" SelectedIndex="{Binding StopActionIndex}" HorizontalAlignment="Stretch" />
+            </Grid>
+            <TextBlock Classes="caption" TextWrapping="Wrap" Text="运行中也可修改。「保存虚拟机状态」会在主机关机时把内存写入磁盘。" />
+          </StackPanel>
+        </TabItem>
+
+        <!-- 备注 -->
+        <TabItem Header="备注">
+          <DockPanel IsEnabled="{Binding CanEditAlways}">
+            <TextBlock DockPanel.Dock="Top" Text="备注" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,8" />
+            <TextBlock DockPanel.Dock="Bottom" Classes="caption" TextWrapping="Wrap" Margin="0,8,0,0"
+                       Text="保存在 Hyper-V 虚拟机配置中（Hyper-V 管理器中同样可见）。WinVM 用于识别系统类型的标记会自动保留。" />
+            <TextBox Text="{Binding Notes}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="180" MaxLength="4000"
+                     Watermark="例如：用途、账号提示、安装记录…" />
+          </DockPanel>
+        </TabItem>
+
+        <!-- 增强会话 -->
+        <TabItem Header="增强会话">
+          <StackPanel Spacing="12">
+            <TextBlock Text="增强会话" FontWeight="SemiBold" FontSize="15" />
+            <CheckBox Content="使用 HvSocket 传输（Linux xrdp 增强会话需要；Windows 来宾保持关闭即可）" IsChecked="{Binding HvSocket}"
+                      IsEnabled="{Binding CanEditOffOnly}" />
+            <Border Background="{DynamicResource App.SurfaceAlt}" CornerRadius="6" Padding="12,10">
+              <TextBlock Text="{Binding HostEnhancedText}" TextWrapping="Wrap" Classes="caption" />
+            </Border>
+          </StackPanel>
+        </TabItem>
+      </TabControl>
+      <ProgressBar IsIndeterminate="True" VerticalAlignment="Top" Height="3" MinHeight="3" IsVisible="{Binding IsLoading}" />
+    </Panel>
+  </DockPanel>
+</Window>

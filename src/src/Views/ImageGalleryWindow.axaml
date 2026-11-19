@@ -1,0 +1,192 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:WinVM.ViewModels"
+        xmlns:c="using:WinVM.Controls"
+        x:Class="WinVM.Views.ImageGalleryWindow"
+        x:DataType="vm:ImageLibraryViewModel"
+        Title="系统镜像库" Icon="/Assets/winvm.ico"
+        Width="920" Height="720" MinWidth="720" MinHeight="480" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel>
+    <Border DockPanel.Dock="Top" Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}"
+            BorderThickness="0,0,0,1" Padding="24,16">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <Border Width="40" Height="40" CornerRadius="8" Background="{DynamicResource App.Accent}">
+          <c:IconView Data="{StaticResource I.Disc}" Width="22" Height="22" StrokeThickness="1.8" Foreground="{DynamicResource App.OnAccent}" />
+        </Border>
+        <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center" Spacing="2">
+          <TextBlock Text="系统镜像库" Classes="dlgTitle" />
+          <TextBlock Text="从官方服务器下载最新版本，自动校验 SHA-256，支持断点续传。可一键安装到新虚拟机。" Classes="caption" />
+        </StackPanel>
+        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+          <Button Command="{Binding UseLocalIsoCommand}" AutomationProperties.Name="使用本地 ISO">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <c:IconView Data="{StaticResource I.Folder}" />
+              <TextBlock Text="使用本地 ISO…" />
+            </StackPanel>
+          </Button>
+          <Button Command="{Binding RefreshCommand}" ToolTip.Tip="重新获取最新版本" AutomationProperties.Name="重新获取最新版本">
+            <c:IconView Data="{StaticResource I.Refresh}" />
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Border DockPanel.Dock="Bottom" Classes="footer" Padding="24,12">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+          <TextBlock Text="保存到：" Classes="caption" VerticalAlignment="Center" />
+          <TextBlock Text="{Binding DownloadFolder}" Classes="caption" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="460" />
+          <Button Classes="link" Content="打开文件夹" Command="{Binding OpenDownloadFolderCommand}" VerticalAlignment="Center" />
+        </StackPanel>
+        <Button Grid.Column="1" Classes="dlg" Content="关闭" IsCancel="True" Click="OnClose" />
+      </Grid>
+    </Border>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+      <StackPanel Spacing="10" Margin="24,16,24,8">
+        <TextBlock Text="Linux 发行版" Classes="section" />
+        <ItemsControl ItemsSource="{Binding LinuxItems}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate><UniformGrid Columns="2" /></ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:IsoItemViewModel">
+              <Border Classes="card">
+                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                  <Border Classes="mono" Classes.windows="{Binding IsWindows}" VerticalAlignment="Top" Grid.RowSpan="2">
+                    <Viewbox StretchDirection="DownOnly" Margin="4,0"><TextBlock Text="{Binding Monogram}" /></Viewbox>
+                  </Border>
+                  <StackPanel Grid.Column="1" Margin="12,0,0,0" Spacing="2">
+                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" TextTrimming="CharacterEllipsis" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="{Binding VersionText}" Classes="caption" FontSize="12" />
+                      <TextBlock Text="·" Classes="caption" FontSize="12" />
+                      <TextBlock Text="{Binding SizeText}" Classes="caption" FontSize="12" />
+                      <c:IconView Data="{StaticResource I.Shield}" Width="13" Height="13" Foreground="{StaticResource Dot.Running}" IsVisible="{Binding HasChecksum}"
+                                  ToolTip.Tip="{Binding ChecksumText}" />
+                    </StackPanel>
+                  </StackPanel>
+                  <TextBlock Grid.Row="1" Grid.Column="1" Margin="12,6,0,0" Text="{Binding Description}" Classes="caption" TextWrapping="Wrap" FontSize="12" MinHeight="32" />
+                  <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="0,10,0,0" Spacing="4">
+                    <ProgressBar Value="{Binding Progress}" Height="4" MinWidth="0" IsVisible="{Binding IsDownloading}" />
+                    <TextBlock Text="{Binding StatusText}" Classes="caption" FontSize="11.5" IsVisible="{Binding ShowStatus}" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding ErrorText}" Classes="error" FontSize="11.5" IsVisible="{Binding HasError}" TextWrapping="Wrap" />
+                    <ProgressBar IsIndeterminate="True" Height="2" MinWidth="0" IsVisible="{Binding IsResolving}" />
+                  </StackPanel>
+                  <Grid Grid.Row="3" Grid.ColumnSpan="2" Margin="0,10,0,0" ColumnDefinitions="*,Auto">
+                    <Button Classes="link" Content="官网" Command="{Binding OpenHomePageCommand}" VerticalAlignment="Center" ToolTip.Tip="{Binding Entry.HomePage}" />
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                      <Button Content="取消" Command="{Binding CancelDownloadCommand}" IsVisible="{Binding IsDownloading}" />
+                      <Button Command="{Binding ShowInFolderCommand}" IsVisible="{Binding IsDownloaded}" ToolTip.Tip="在资源管理器中显示" AutomationProperties.Name="在资源管理器中显示">
+                        <c:IconView Data="{StaticResource I.Folder}" />
+                      </Button>
+                      <Button Command="{Binding DownloadCommand}" IsVisible="{Binding CanDownload}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                          <c:IconView Data="{StaticResource I.Download}" StrokeThickness="2" />
+                          <TextBlock Text="{Binding DownloadButtonText}" />
+                        </StackPanel>
+                      </Button>
+                      <Button Classes="accent" Command="{Binding OneClickInstallCommand}" IsVisible="{Binding CanOneClick}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                          <c:IconView Data="{StaticResource I.Check}" StrokeThickness="2" />
+                          <TextBlock Text="{Binding PrimaryActionText}" />
+                        </StackPanel>
+                      </Button>
+                    </StackPanel>
+                  </Grid>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <TextBlock Text="Windows" Classes="section" Margin="0,6,0,0" />
+        <ItemsControl ItemsSource="{Binding WindowsItems}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate><UniformGrid Columns="2" /></ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:IsoItemViewModel">
+              <Border Classes="card">
+                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                  <Border Classes="mono windows" VerticalAlignment="Top" Grid.RowSpan="2">
+                    <c:IconView Data="{StaticResource F.Windows}" Filled="True" Width="20" Height="20" Foreground="White" />
+                  </Border>
+                  <StackPanel Grid.Column="1" Margin="12,0,0,0" Spacing="2">
+                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" />
+                    <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding !IsLinkOnly}">
+                      <TextBlock Text="{Binding VersionText}" Classes="caption" FontSize="12" />
+                      <TextBlock Text="·" Classes="caption" FontSize="12" />
+                      <TextBlock Text="{Binding SizeText}" Classes="caption" FontSize="12" />
+                    </StackPanel>
+                  </StackPanel>
+                  <TextBlock Grid.Row="1" Grid.Column="1" Margin="12,6,0,0" Text="{Binding Description}" Classes="caption" TextWrapping="Wrap" FontSize="12" MinHeight="32" />
+                  <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="0,10,0,0" Spacing="4">
+                    <ProgressBar Value="{Binding Progress}" Height="4" MinWidth="0" IsVisible="{Binding IsDownloading}" />
+                    <TextBlock Text="{Binding StatusText}" Classes="caption" FontSize="11.5" IsVisible="{Binding ShowStatus}" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding ErrorText}" Classes="error" FontSize="11.5" IsVisible="{Binding HasError}" TextWrapping="Wrap" />
+                    <ProgressBar IsIndeterminate="True" Height="2" MinWidth="0" IsVisible="{Binding IsResolving}" />
+                  </StackPanel>
+                  <Grid Grid.Row="3" Grid.ColumnSpan="2" Margin="0,10,0,0" ColumnDefinitions="*,Auto">
+                    <Button Classes="link" Content="官网" Command="{Binding OpenHomePageCommand}" VerticalAlignment="Center" />
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                      <Button Content="取消" Command="{Binding CancelDownloadCommand}" IsVisible="{Binding IsDownloading}" />
+                      <Button Command="{Binding DownloadCommand}" IsVisible="{Binding CanDownload}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                          <c:IconView Data="{StaticResource I.Download}" StrokeThickness="2" />
+                          <TextBlock Text="{Binding DownloadButtonText}" />
+                        </StackPanel>
+                      </Button>
+                      <Button Classes="accent" Command="{Binding OneClickInstallCommand}" IsVisible="{Binding CanOneClick}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                          <c:IconView Data="{StaticResource I.Check}" StrokeThickness="2" />
+                          <TextBlock Text="{Binding PrimaryActionText}" />
+                        </StackPanel>
+                      </Button>
+                      <Button IsVisible="{Binding IsLinkOnly}" Command="{Binding OpenHomePageCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                          <c:IconView Data="{StaticResource I.Globe}" />
+                          <TextBlock Text="打开官方下载页" />
+                        </StackPanel>
+                      </Button>
+                    </StackPanel>
+                  </Grid>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <TextBlock Classes="caption" TextWrapping="Wrap" Margin="0,2,10,4"
+                   Text="Windows 11 / 10 支持在线解析 Microsoft 官方 CDN 链接（优先简体中文）。若解析失败，请打开官网下载后使用「使用本地 ISO…」。" />
+
+        <TextBlock Text="macOS" Classes="section" Margin="0,8,0,0" />
+        <ItemsControl ItemsSource="{Binding MacItems}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:IsoItemViewModel">
+              <Border Classes="card">
+                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                  <Border Classes="mono" VerticalAlignment="Top" Opacity="0.75">
+                    <Viewbox StretchDirection="DownOnly" Margin="4,0"><TextBlock Text="Mac" /></Viewbox>
+                  </Border>
+                  <StackPanel Grid.Column="1" Margin="12,0,0,0" Spacing="4">
+                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" />
+                    <TextBlock Text="{Binding Description}" Classes="caption" TextWrapping="Wrap" FontSize="12" />
+                  </StackPanel>
+                  <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="6" Margin="0,10,0,0">
+                    <Button Command="{Binding OpenHomePageCommand}">
+                      <StackPanel Orientation="Horizontal" Spacing="6">
+                        <c:IconView Data="{StaticResource I.Globe}" />
+                        <TextBlock Text="查看 Apple 说明" />
+                      </StackPanel>
+                    </Button>
+                  </StackPanel>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</Window>

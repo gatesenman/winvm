@@ -1,0 +1,157 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:WinVM.ViewModels"
+        xmlns:c="using:WinVM.Controls"
+        x:Class="WinVM.Views.OneClickWizardWindow"
+        x:DataType="vm:OneClickInstallViewModel"
+        Title="一键安装系统" Icon="/Assets/winvm.ico"
+        Width="920" Height="760" MinWidth="760" MinHeight="600" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel>
+    <Border DockPanel.Dock="Top" Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}"
+            BorderThickness="0,0,0,1" Padding="24,16">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <Border Width="40" Height="40" CornerRadius="8" Background="{DynamicResource App.Accent}">
+          <c:IconView Data="{StaticResource I.Download}" Width="22" Height="22" StrokeThickness="1.8" Foreground="{DynamicResource App.OnAccent}" />
+        </Border>
+        <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center" Spacing="2">
+          <TextBlock Text="一键安装系统" Classes="dlgTitle" />
+          <TextBlock Text="选择系统 → 下载官方 ISO → 按推荐配置创建虚拟机 → 可选启动并打开控制台" Classes="caption" />
+        </StackPanel>
+        <TextBlock Grid.Column="2" Text="{Binding PhaseText}" Classes="caption" VerticalAlignment="Center" />
+      </Grid>
+    </Border>
+
+    <Border DockPanel.Dock="Bottom" Classes="footer" Padding="24,12">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Spacing="4" VerticalAlignment="Center">
+          <ProgressBar Value="{Binding Progress}" Height="4" MinWidth="120" Maximum="100"
+                       IsVisible="{Binding IsBusy}" />
+          <TextBlock Text="{Binding StatusText}" Classes="caption" TextTrimming="CharacterEllipsis" />
+          <TextBlock Text="{Binding ErrorText}" Classes="error" TextWrapping="Wrap" IsVisible="{Binding ErrorText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+          <Button Classes="dlg accent" Content="开始一键安装" IsDefault="True"
+                  Command="{Binding RunCommand}" IsEnabled="{Binding CanRun}" />
+          <Button Classes="dlg" Content="取消" IsCancel="True" Command="{Binding CancelCommand}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" IsEnabled="{Binding CanSelect}">
+      <StackPanel Spacing="12" Margin="24,16,24,12">
+        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
+          <StackPanel Grid.ColumnSpan="2" Spacing="6" Margin="0,0,0,8">
+            <TextBlock Text="虚拟机名称（可选，默认自动命名）" Classes="formLabel" />
+            <TextBox Text="{Binding VmName}" Watermark="例如 Ubuntu-桌面-1" MaxLength="80" IsEnabled="{Binding CanSelect}" />
+            <StackPanel Orientation="Horizontal" Spacing="16" Margin="0,4,0,0">
+              <CheckBox Content="创建后立即启动" IsChecked="{Binding StartAfterCreate}" IsEnabled="{Binding CanSelect}" />
+              <CheckBox Content="启动后打开 Hyper-V 连接（vmconnect）" IsChecked="{Binding OpenConsoleAfterStart}"
+                        IsEnabled="{Binding CanSelect}" />
+            </StackPanel>
+            <Border Margin="0,12,0,0" Padding="12" CornerRadius="8" Background="{DynamicResource App.Surface}"
+                    BorderBrush="{DynamicResource App.Border}" BorderThickness="1" IsEnabled="{Binding CanSelect}">
+              <StackPanel Spacing="8">
+                <CheckBox Content="基础环境（生成首次配置脚本，安装后在来宾中运行）" IsChecked="{Binding EnableBasicEnv}" FontWeight="SemiBold" />
+                <StackPanel Orientation="Horizontal" Spacing="12" IsVisible="{Binding EnableBasicEnv}">
+                  <CheckBox Content="启用 RDP（Windows）" IsChecked="{Binding EnableRdp}" />
+                  <CheckBox Content="OpenSSH" IsChecked="{Binding EnableOpenSsh}" />
+                  <CheckBox Content="Agent 就绪（curl/git/sudo 或 Win OpenSSH）" IsChecked="{Binding AgentReadyProfile}" />
+                </StackPanel>
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" IsVisible="{Binding EnableBasicEnv}">
+                  <TextBlock Grid.Row="0" Classes="formLabel" Text="主机名" Margin="0,0,8,0" />
+                  <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding GuestHostname}" Watermark="默认用虚拟机名" Margin="0,0,0,6" />
+                  <TextBlock Grid.Row="1" Classes="formLabel" Text="本地用户" Margin="0,0,8,0" />
+                  <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding GuestUsername}" Watermark="可选" Margin="0,0,0,6" />
+                  <TextBlock Grid.Row="2" Classes="formLabel" Text="密码（仅写入本机脚本）" Margin="0,0,8,0" />
+                  <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding GuestPassword}" PasswordChar="●" Watermark="可选，不记入日志" />
+                </Grid>
+                <TextBlock Classes="caption" Text="时区固定为 Asia/Shanghai。完整无人值守在部分主机上不稳定；一键创建/启动仍会完成，脚本供首次连接后执行。"
+                           TextWrapping="Wrap" IsVisible="{Binding EnableBasicEnv}" />
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </Grid>
+
+        <TextBlock Text="Linux" Classes="section" />
+        <ItemsControl ItemsSource="{Binding LinuxCards}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate><UniformGrid Columns="2" /></ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:IsoItemViewModel">
+              <Border Classes="card" Margin="0,0,8,8" Cursor="Hand"
+                      PointerPressed="OnCardPressed"
+                      BorderBrush="{DynamicResource App.Accent}"
+                      BorderThickness="2"
+                      Tag="{Binding}">
+                <Border.Styles>
+                  <Style Selector="Border.card">
+                    <Setter Property="BorderThickness" Value="1" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource App.Border}" />
+                  </Style>
+                </Border.Styles>
+                <Grid ColumnDefinitions="Auto,*">
+                  <Border Classes="mono" Width="44" Height="44">
+                    <Viewbox StretchDirection="DownOnly" Margin="4,0"><TextBlock Text="{Binding Monogram}" /></Viewbox>
+                  </Border>
+                  <StackPanel Grid.Column="1" Margin="12,0,0,0" Spacing="2">
+                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding Description}" Classes="caption" FontSize="11.5" TextWrapping="Wrap" MaxHeight="40" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding RecommendText}" Classes="caption" FontSize="11" Opacity="0.85" />
+                  </StackPanel>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <TextBlock Text="Windows" Classes="section" Margin="0,4,0,0" />
+        <ItemsControl ItemsSource="{Binding WindowsCards}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate><UniformGrid Columns="2" /></ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:IsoItemViewModel">
+              <Border Classes="card" Margin="0,0,8,8" Cursor="Hand" PointerPressed="OnCardPressed" Tag="{Binding}">
+                <Grid ColumnDefinitions="Auto,*">
+                  <Border Classes="mono windows" Width="44" Height="44">
+                    <c:IconView Data="{StaticResource F.Windows}" Filled="True" Width="20" Height="20" Foreground="White" />
+                  </Border>
+                  <StackPanel Grid.Column="1" Margin="12,0,0,0" Spacing="2">
+                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13" />
+                    <TextBlock Text="{Binding Description}" Classes="caption" FontSize="11.5" TextWrapping="Wrap" MaxHeight="48" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding RecommendText}" Classes="caption" FontSize="11" Opacity="0.85"
+                               IsVisible="{Binding Entry.IsDownloadable}" />
+                    <TextBlock Text="仅官网链接（评估版需手动下载）" Classes="caption" FontSize="11"
+                               IsVisible="{Binding IsLinkOnly}" />
+                  </StackPanel>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <TextBlock Text="macOS" Classes="section" Margin="0,4,0,0" />
+        <ItemsControl ItemsSource="{Binding MacCards}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:IsoItemViewModel">
+              <Border Classes="card" Margin="0,0,0,8" Background="{DynamicResource App.Surface}">
+                <Grid ColumnDefinitions="Auto,*">
+                  <Border Classes="mono" Width="44" Height="44" Opacity="0.7">
+                    <Viewbox StretchDirection="DownOnly" Margin="4,0"><TextBlock Text="Mac" /></Viewbox>
+                  </Border>
+                  <StackPanel Grid.Column="1" Margin="12,0,0,0" Spacing="4">
+                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13" />
+                    <TextBlock Text="{Binding Description}" Classes="caption" FontSize="12" TextWrapping="Wrap" />
+                    <Button Classes="link" Content="了解 Apple 支持说明" Command="{Binding OpenHomePageCommand}" HorizontalAlignment="Left" />
+                  </StackPanel>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</Window>

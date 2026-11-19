@@ -1,0 +1,114 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:WinVM.ViewModels"
+        xmlns:m="using:WinVM.Models"
+        xmlns:c="using:WinVM.Controls"
+        x:Class="WinVM.Views.SwitchManagerWindow"
+        x:DataType="vm:SwitchManagerViewModel"
+        Title="虚拟交换机管理" Icon="/Assets/winvm.ico"
+        Width="900" Height="700" MinWidth="780" MinHeight="600" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel>
+    <Border DockPanel.Dock="Top" Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}"
+            BorderThickness="0,0,0,1" Padding="24,14">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <Border Width="40" Height="40" CornerRadius="8" Background="{DynamicResource App.SurfaceAlt}">
+          <c:IconView Data="{StaticResource I.Network}" Width="22" Height="22" />
+        </Border>
+        <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center" Spacing="2">
+          <TextBlock Text="虚拟交换机管理" Classes="dlgTitle" />
+          <TextBlock Text="创建、重命名、删除 Hyper-V 虚拟交换机，并为虚拟机更换网络。" Classes="caption" />
+        </StackPanel>
+        <Button Grid.Column="2" Content="刷新" Command="{Binding LoadCommand}" VerticalAlignment="Center" />
+      </Grid>
+    </Border>
+
+    <Border DockPanel.Dock="Bottom" Classes="footer">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Spacing="3" VerticalAlignment="Center">
+          <ProgressBar IsIndeterminate="True" Width="90" MinWidth="90" Height="3" HorizontalAlignment="Left" IsVisible="{Binding IsBusy}" />
+          <TextBlock Text="{Binding ErrorText}" Classes="error" TextWrapping="Wrap" MaxWidth="620"
+                     IsVisible="{Binding ErrorText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+          <TextBlock Text="{Binding StatusText}" Classes="caption"
+                     IsVisible="{Binding ErrorText, Converter={x:Static StringConverters.IsNullOrEmpty}}" />
+        </StackPanel>
+        <Button Grid.Column="1" Classes="dlg" Content="关闭" IsCancel="True" Click="OnClose" VerticalAlignment="Center" />
+      </Grid>
+    </Border>
+
+    <Grid ColumnDefinitions="*,330" Margin="20,14,20,12">
+      <!-- list + details -->
+      <DockPanel Margin="0,0,16,0">
+        <TextBlock DockPanel.Dock="Top" Text="虚拟交换机" FontWeight="SemiBold" Margin="0,0,0,6" />
+        <Border DockPanel.Dock="Bottom" Background="{DynamicResource App.SurfaceAlt}" CornerRadius="6" Padding="12,10" Margin="0,10,0,0"
+                IsVisible="{Binding HasSelection}">
+          <StackPanel Spacing="6">
+            <Grid ColumnDefinitions="*,Auto,Auto">
+              <TextBlock Text="{Binding SelectedSwitch.Name, FallbackValue=''}" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+              <Button Grid.Column="1" Content="重命名…" Command="{Binding RenameCommand}" Margin="8,0,0,0" />
+              <Button Grid.Column="2" Content="删除…" Command="{Binding DeleteCommand}" Margin="6,0,0,0" />
+            </Grid>
+            <TextBlock Text="{Binding SelectedSwitch.KindDescription, FallbackValue=''}" TextWrapping="Wrap" Classes="caption" />
+            <TextBlock Text="{Binding SelectedSwitch.UsageText, FallbackValue=''}" TextWrapping="Wrap" Classes="caption" />
+          </StackPanel>
+        </Border>
+        <ListBox ItemsSource="{Binding Switches}" SelectedItem="{Binding SelectedSwitch}" AutomationProperties.Name="虚拟交换机列表">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="m:VSwitchInfo">
+              <Grid ColumnDefinitions="*,90,110" Background="Transparent">
+                <StackPanel Spacing="1">
+                  <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                  <TextBlock Text="{Binding AdapterDescription}" Classes="caption" TextTrimming="CharacterEllipsis"
+                             IsVisible="{Binding AdapterDescription, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                </StackPanel>
+                <TextBlock Grid.Column="1" Text="{Binding KindText}" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="2" Text="{Binding ConnectedVms.Count, StringFormat='{}{0} 台虚拟机'}" VerticalAlignment="Center" Classes="caption" />
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+
+      <!-- create + connect -->
+      <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Spacing="10">
+          <Border Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="14,12">
+            <StackPanel Spacing="8">
+              <TextBlock Text="新建虚拟交换机" FontWeight="SemiBold" />
+              <TextBox Text="{Binding NewName}" Watermark="名称，例如：实验室内网" MaxLength="100" />
+              <ComboBox ItemsSource="{Binding Kinds}" SelectedIndex="{Binding NewKindIndex}" HorizontalAlignment="Stretch" />
+              <StackPanel Spacing="8" IsVisible="{Binding IsExternal}">
+                <ComboBox ItemsSource="{Binding Adapters}" SelectedItem="{Binding SelectedAdapter}" HorizontalAlignment="Stretch"
+                          PlaceholderText="选择物理网卡">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="m:NetAdapterInfo">
+                      <TextBlock Text="{Binding Display}" TextTrimming="CharacterEllipsis" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+                <CheckBox Content="允许主机共享此网卡" IsChecked="{Binding AllowManagementOs}" />
+              </StackPanel>
+              <TextBlock Text="{Binding CreateHint}" TextWrapping="Wrap" Classes="caption" />
+              <Button Classes="accent" Content="创建" Command="{Binding CreateCommand}" HorizontalAlignment="Right" />
+            </StackPanel>
+          </Border>
+          <Border Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="14,12">
+            <StackPanel Spacing="8">
+              <TextBlock Text="更换虚拟机的网络" FontWeight="SemiBold" />
+              <ComboBox ItemsSource="{Binding Vms}" SelectedItem="{Binding SelectedVm}" HorizontalAlignment="Stretch" PlaceholderText="选择虚拟机">
+                <ComboBox.ItemTemplate>
+                  <DataTemplate x:DataType="m:VmInfo">
+                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
+              </ComboBox>
+              <ComboBox ItemsSource="{Binding SwitchChoices}" SelectedItem="{Binding TargetSwitch}" HorizontalAlignment="Stretch" PlaceholderText="目标交换机" />
+              <TextBlock Text="运行中也可更换（第一个网络适配器）。" Classes="caption" TextWrapping="Wrap" />
+              <Button Content="应用" Command="{Binding ConnectVmCommand}" HorizontalAlignment="Right" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </ScrollViewer>
+    </Grid>
+  </DockPanel>
+</Window>

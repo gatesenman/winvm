@@ -1,0 +1,37 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="WinVM.Views.AboutWindow"
+        Title="关于 WinVM" Icon="/Assets/winvm.ico"
+        Width="460" SizeToContent="Height" CanResize="False" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel>
+    <Border DockPanel.Dock="Bottom" Classes="footer">
+      <Grid ColumnDefinitions="*,Auto">
+        <Button Content="打开日志文件夹" Click="OnOpenLogs" HorizontalAlignment="Left" />
+        <Button Grid.Column="1" Classes="dlg accent" Content="确定" IsDefault="True" IsCancel="True" Click="OnOk" />
+      </Grid>
+    </Border>
+    <StackPanel Margin="28,24" Spacing="14">
+      <StackPanel Orientation="Horizontal" Spacing="16">
+        <Image Source="/Assets/winvm-64.png" Width="56" Height="56" />
+        <StackPanel VerticalAlignment="Center" Spacing="2">
+          <TextBlock Text="WinVM" FontSize="22" FontWeight="SemiBold" />
+          <TextBlock x:Name="VersionText" Classes="caption" />
+        </StackPanel>
+      </StackPanel>
+      <TextBlock TextWrapping="Wrap" LineHeight="20"
+                 Text="面向 Windows 的 Hyper-V 虚拟机资源库，灵感来自 macOS 上的 MacVM。管理本机 Linux / Windows 虚拟机：创建、电源操作、检查点、设置、控制台。" />
+      <Grid ColumnDefinitions="90,*" RowDefinitions="Auto,Auto,Auto,Auto">
+        <TextBlock Classes="k" Text="默认存储" />
+        <SelectableTextBlock x:Name="StoreText" Grid.Column="1" Classes="v" />
+        <TextBlock Grid.Row="1" Classes="k" Text="日志" />
+        <SelectableTextBlock x:Name="LogText" Grid.Row="1" Grid.Column="1" Classes="v" />
+        <TextBlock Grid.Row="2" Classes="k" Text="快捷键" />
+        <TextBlock Grid.Row="2" Grid.Column="1" Classes="v"
+                   Text="F5 刷新 · Ctrl+N 新建 · Ctrl+F 搜索 · Enter/双击 控制台 · F2 重命名 · Del 删除 · Ctrl+T 检查点 · Ctrl+Shift+S 启动 · F1 全部快捷键" />
+        <TextBlock Grid.Row="3" Classes="k" Text="技术" />
+        <TextBlock Grid.Row="3" Grid.Column="1" Classes="v" Text=".NET 8 · Avalonia 11 · Hyper-V PowerShell" />
+      </Grid>
+    </StackPanel>
+  </DockPanel>
+</Window>

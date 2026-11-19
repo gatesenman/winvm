@@ -1,0 +1,133 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="using:WinVM.Controls"
+             x:Class="WinVM.App"
+             Name="WinVM"
+             RequestedThemeVariant="Default">
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+          <SolidColorBrush x:Key="App.Background" Color="#F3F3F3" />
+          <SolidColorBrush x:Key="App.Chrome" Color="#F9F9F9" />
+          <SolidColorBrush x:Key="App.Sidebar" Color="#F0F2F5" />
+          <SolidColorBrush x:Key="App.Surface" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="App.SurfaceAlt" Color="#F7F8FA" />
+          <SolidColorBrush x:Key="App.Border" Color="#E3E5E8" />
+          <SolidColorBrush x:Key="App.BorderStrong" Color="#D1D4D8" />
+          <SolidColorBrush x:Key="App.Text" Color="#1B1B1B" />
+          <SolidColorBrush x:Key="App.SubText" Color="#5F6368" />
+          <SolidColorBrush x:Key="App.Hover" Color="#0F000000" />
+          <SolidColorBrush x:Key="App.Pressed" Color="#18000000" />
+          <SolidColorBrush x:Key="App.Accent" Color="#0067C0" />
+          <SolidColorBrush x:Key="App.AccentHover" Color="#1975C5" />
+          <SolidColorBrush x:Key="App.OnAccent" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="App.Danger" Color="#C42B1C" />
+          <SolidColorBrush x:Key="App.DangerHover" Color="#B02718" />
+          <SolidColorBrush x:Key="App.StatusBar" Color="#ECEEF1" />
+          <SolidColorBrush x:Key="App.Footer" Color="#F3F3F3" />
+          <SolidColorBrush x:Key="Chip.Running" Color="#DFF6DD" />
+          <SolidColorBrush x:Key="Chip.RunningText" Color="#0F7B0F" />
+          <SolidColorBrush x:Key="Chip.Paused" Color="#FFF4CE" />
+          <SolidColorBrush x:Key="Chip.PausedText" Color="#8A5300" />
+          <SolidColorBrush x:Key="Chip.Saved" Color="#E5F1FB" />
+          <SolidColorBrush x:Key="Chip.SavedText" Color="#005A9E" />
+          <SolidColorBrush x:Key="Chip.Off" Color="#EDEDED" />
+          <SolidColorBrush x:Key="Chip.OffText" Color="#5F6368" />
+          <SolidColorBrush x:Key="Warn.Background" Color="#FFF4CE" />
+          <SolidColorBrush x:Key="Warn.Border" Color="#F2D58A" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+          <SolidColorBrush x:Key="App.Background" Color="#202020" />
+          <SolidColorBrush x:Key="App.Chrome" Color="#2B2B2B" />
+          <SolidColorBrush x:Key="App.Sidebar" Color="#1C1C1C" />
+          <SolidColorBrush x:Key="App.Surface" Color="#272727" />
+          <SolidColorBrush x:Key="App.SurfaceAlt" Color="#2E2E2E" />
+          <SolidColorBrush x:Key="App.Border" Color="#383838" />
+          <SolidColorBrush x:Key="App.BorderStrong" Color="#454545" />
+          <SolidColorBrush x:Key="App.Text" Color="#F2F2F2" />
+          <SolidColorBrush x:Key="App.SubText" Color="#A8A8A8" />
+          <SolidColorBrush x:Key="App.Hover" Color="#14FFFFFF" />
+          <SolidColorBrush x:Key="App.Pressed" Color="#0AFFFFFF" />
+          <SolidColorBrush x:Key="App.Accent" Color="#4CC2FF" />
+          <SolidColorBrush x:Key="App.AccentHover" Color="#62CAFF" />
+          <SolidColorBrush x:Key="App.OnAccent" Color="#000000" />
+          <SolidColorBrush x:Key="App.Danger" Color="#E5584A" />
+          <SolidColorBrush x:Key="App.DangerHover" Color="#EF6B5E" />
+          <SolidColorBrush x:Key="App.StatusBar" Color="#1A1A1A" />
+          <SolidColorBrush x:Key="App.Footer" Color="#202020" />
+          <SolidColorBrush x:Key="Chip.Running" Color="#1F3A1F" />
+          <SolidColorBrush x:Key="Chip.RunningText" Color="#6CCB5F" />
+          <SolidColorBrush x:Key="Chip.Paused" Color="#3D3218" />
+          <SolidColorBrush x:Key="Chip.PausedText" Color="#FCE100" />
+          <SolidColorBrush x:Key="Chip.Saved" Color="#17324A" />
+          <SolidColorBrush x:Key="Chip.SavedText" Color="#60CDFF" />
+          <SolidColorBrush x:Key="Chip.Off" Color="#333333" />
+          <SolidColorBrush x:Key="Chip.OffText" Color="#B5B5B5" />
+          <SolidColorBrush x:Key="Warn.Background" Color="#433519" />
+          <SolidColorBrush x:Key="Warn.Border" Color="#6B5420" />
+        </ResourceDictionary>
+      </ResourceDictionary.ThemeDictionaries>
+
+      <SolidColorBrush x:Key="Dot.Running" Color="#13A10E" />
+      <SolidColorBrush x:Key="Dot.Paused" Color="#F7A600" />
+      <SolidColorBrush x:Key="Dot.Saved" Color="#2B88D8" />
+      <SolidColorBrush x:Key="Dot.Off" Color="#8A8A8A" />
+      <SolidColorBrush x:Key="Dot.Transient" Color="#8764B8" />
+      <SolidColorBrush x:Key="Os.Windows" Color="#0078D4" />
+      <SolidColorBrush x:Key="Os.Linux" Color="#E95420" />
+      <SolidColorBrush x:Key="Os.Unknown" Color="#6B7280" />
+
+      <FontFamily x:Key="App.Font">Segoe UI Variable Text, Segoe UI, Microsoft YaHei UI, Microsoft YaHei, PingFang SC, Noto Sans CJK SC, Noto Sans, sans-serif</FontFamily>
+
+      <!-- 24x24 line icons (Fluent-like) -->
+      <StreamGeometry x:Key="I.Add">M12,4.5 V19.5 M4.5,12 H19.5</StreamGeometry>
+      <StreamGeometry x:Key="I.Play">M7.5,4.8 L19,12 L7.5,19.2 Z</StreamGeometry>
+      <StreamGeometry x:Key="I.Power">M12,3.5 V11.5 M7.6,6.2 A7.5,7.5 0 1 0 16.4,6.2</StreamGeometry>
+      <StreamGeometry x:Key="I.Bolt">M13.5,3 L5.5,13.5 H11.5 L10.5,21 L18.5,10.5 H12.5 Z</StreamGeometry>
+      <StreamGeometry x:Key="I.Pause">M8.5,5 V19 M15.5,5 V19</StreamGeometry>
+      <StreamGeometry x:Key="I.Restart">M19.5,12 A7.5,7.5 0 1 1 17.3,6.7 M18,3 V7.2 H13.8</StreamGeometry>
+      <StreamGeometry x:Key="I.Reset">M4.5,12 A7.5,7.5 0 1 0 6.7,6.7 M6,3 V7.2 H10.2 M12,8.5 V12.5 L14.5,14</StreamGeometry>
+      <StreamGeometry x:Key="I.Console">M3.5,4.5 H20.5 V15.5 H3.5 Z M8,19.5 H16 M12,15.5 V19.5 M7,8.5 L9.5,10.5 L7,12.5 M11.5,12.5 H15</StreamGeometry>
+      <StreamGeometry x:Key="I.Checkpoint">M5.5,21 V3.5 M5.5,4 H17.5 L15,8 L17.5,12 H5.5</StreamGeometry>
+      <StreamGeometry x:Key="I.Settings">M4,7 H7 M11,7 H20 M4,17 H13 M17,17 H20 M7,7 A2,2 0 1 0 11,7 A2,2 0 1 0 7,7 M13,17 A2,2 0 1 0 17,17 A2,2 0 1 0 13,17</StreamGeometry>
+      <StreamGeometry x:Key="I.Delete">M4,6.5 H20 M9.5,6.5 V4 H14.5 V6.5 M6.2,6.5 L7.2,20 H16.8 L17.8,6.5 M10,10.5 V16 M14,10.5 V16</StreamGeometry>
+      <StreamGeometry x:Key="I.Rename">M4,20 H8 L19,9 L15,5 L4,16 Z M13,7 L17,11 M13,20 H20</StreamGeometry>
+      <StreamGeometry x:Key="I.Disk">M3.5,14 H20.5 V19.5 H3.5 Z M3.5,14 L6.5,4.5 H17.5 L20.5,14 M16.5,16.8 H17</StreamGeometry>
+      <StreamGeometry x:Key="I.Search">M10.5,4 A6.5,6.5 0 1 0 10.5,17 A6.5,6.5 0 1 0 10.5,4 M15.3,15.3 L20,20</StreamGeometry>
+      <StreamGeometry x:Key="I.Refresh">M19.5,12 A7.5,7.5 0 1 1 17.3,6.7 M18,3 V7.2 H13.8</StreamGeometry>
+      <StreamGeometry x:Key="I.Folder">M3.5,6.5 V18.5 H20.5 V8.5 H11.5 L9.5,5.5 H3.5 Z</StreamGeometry>
+      <StreamGeometry x:Key="I.Info">M12,3.5 A8.5,8.5 0 1 0 12,20.5 A8.5,8.5 0 1 0 12,3.5 M12,11 V16.5 M12,7.8 V8.2</StreamGeometry>
+      <StreamGeometry x:Key="I.Warning">M12,3.5 L21,19.5 H3 Z M12,9.5 V14 M12,16.8 V17.2</StreamGeometry>
+      <StreamGeometry x:Key="I.Shield">M12,3 L19.5,6 V11.5 C19.5,16 16.3,19.6 12,21 C7.7,19.6 4.5,16 4.5,11.5 V6 Z M9,12 L11.2,14.2 L15.2,10</StreamGeometry>
+      <StreamGeometry x:Key="I.Copy">M8.5,8.5 H19.5 V19.5 H8.5 Z M15.5,8.5 V4.5 H4.5 V15.5 H8.5</StreamGeometry>
+      <StreamGeometry x:Key="I.Monitor">M3.5,4.5 H20.5 V15.5 H3.5 Z M8,19.5 H16 M12,15.5 V19.5</StreamGeometry>
+      <StreamGeometry x:Key="I.Network">M12,3.5 V8.5 M5,20.5 V15.5 H19 V20.5 M12,15.5 V12.5 M9,8.5 H15 V12.5 H9 Z M3,20.5 H7 M17,20.5 H21</StreamGeometry>
+      <StreamGeometry x:Key="I.Close">M6,6 L18,18 M18,6 L6,18</StreamGeometry>
+      <StreamGeometry x:Key="I.Clone">M8.5,8.5 H19.5 V19.5 H8.5 Z M15.5,8.5 V4.5 H4.5 V15.5 H8.5 M14,11.5 V16.5 M11.5,14 H16.5</StreamGeometry>
+      <StreamGeometry x:Key="I.Export">M12,14.5 V3.5 M8,7.5 L12,3.5 L16,7.5 M4.5,12.5 V20 H19.5 V12.5</StreamGeometry>
+      <StreamGeometry x:Key="I.Import">M12,3.5 V14.5 M8,10.5 L12,14.5 L16,10.5 M4.5,12.5 V20 H19.5 V12.5</StreamGeometry>
+      <StreamGeometry x:Key="I.Download">M12,4 V15 M7.5,10.5 L12,15 L16.5,10.5 M5,19.5 H19</StreamGeometry>
+      <StreamGeometry x:Key="I.Disc">M12,3.5 A8.5,8.5 0 1 0 12,20.5 A8.5,8.5 0 1 0 12,3.5 M12,10 A2,2 0 1 0 12,14 A2,2 0 1 0 12,10</StreamGeometry>
+      <StreamGeometry x:Key="I.Gauge">M4,17 A8.5,8.5 0 1 1 20,17 M12,13.5 L16,8.5 M12,13.5 A0.6,0.6 0 1 0 12,14.7</StreamGeometry>
+      <StreamGeometry x:Key="I.Memory">M4.5,7.5 H19.5 V16.5 H4.5 Z M8,10.5 V13.5 M12,10.5 V13.5 M16,10.5 V13.5 M7,16.5 V19 M17,16.5 V19 M7,7.5 V5 M17,7.5 V5</StreamGeometry>
+      <StreamGeometry x:Key="I.Clock">M12,3.5 A8.5,8.5 0 1 0 12,20.5 A8.5,8.5 0 1 0 12,3.5 M12,7.5 V12 L15,14</StreamGeometry>
+      <StreamGeometry x:Key="I.Keyboard">M3,6.5 H21 V17.5 H3 Z M6.5,10 H7 M10,10 H10.5 M13.5,10 H14 M17,10 H17.5 M8,14 H16</StreamGeometry>
+      <StreamGeometry x:Key="I.Globe">M12,3.5 A8.5,8.5 0 1 0 12,20.5 A8.5,8.5 0 1 0 12,3.5 M3.5,12 H20.5 M12,3.5 C8.8,7.5 8.8,16.5 12,20.5 M12,3.5 C15.2,7.5 15.2,16.5 12,20.5</StreamGeometry>
+      <StreamGeometry x:Key="I.Check">M5,12.5 L10,17.5 L19,7</StreamGeometry>
+      <StreamGeometry x:Key="I.Tasks">M4,6.5 H6 M9,6.5 H20 M4,12 H6 M9,12 H20 M4,17.5 H6 M9,17.5 H20</StreamGeometry>
+      <StreamGeometry x:Key="I.Bell">M6,16.5 V11 A6,6 0 0 1 18,11 V16.5 L19.5,18 H4.5 Z M10,20.5 H14</StreamGeometry>
+      <StreamGeometry x:Key="I.Stop">M6.5,6.5 H17.5 V17.5 H6.5 Z</StreamGeometry>
+      <!-- filled glyphs -->
+      <StreamGeometry x:Key="F.Windows">M3,5.6 L10.6,4.5 V11.4 H3 Z M11.6,4.35 L21,3 V11.4 H11.6 Z M3,12.6 H10.6 V19.5 L3,18.4 Z M11.6,12.6 H21 V21 L11.6,19.65 Z</StreamGeometry>
+      <StreamGeometry x:Key="F.Linux">M12,2.5 C9.6,2.5 8.6,4.6 8.6,7 C8.6,9 6,11.4 6,15 C6,18.4 8.6,21.5 12,21.5 C15.4,21.5 18,18.4 18,15 C18,11.4 15.4,9 15.4,7 C15.4,4.6 14.4,2.5 12,2.5 Z M12,10.6 C10.2,10.6 9.2,13 9.2,15.2 C9.2,17.6 10.4,19.4 12,19.4 C13.6,19.4 14.8,17.6 14.8,15.2 C14.8,13 13.8,10.6 12,10.6 Z M9.7,6.2 A0.8,0.8 0 1 0 11.3,6.2 A0.8,0.8 0 1 0 9.7,6.2 Z M12.7,6.2 A0.8,0.8 0 1 0 14.3,6.2 A0.8,0.8 0 1 0 12.7,6.2 Z</StreamGeometry>
+      <StreamGeometry x:Key="F.Monitor">M3,4 H21 V16 H3 Z M5,6 V14 H19 V6 Z M8,19 H16 V20.5 H8 Z M11,16 H13 V19 H11 Z</StreamGeometry>
+      <StreamGeometry x:Key="F.Play">M7,4.3 L19.5,12 L7,19.7 Z</StreamGeometry>
+    </ResourceDictionary>
+  </Application.Resources>
+
+  <Application.Styles>
+    <FluentTheme />
+    <StyleInclude Source="avares://WinVM/Styles/AppStyles.axaml" />
+  </Application.Styles>
+</Application>
