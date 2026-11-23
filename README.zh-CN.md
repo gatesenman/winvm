@@ -60,6 +60,19 @@ WinVM.exe --connect-info <VM名或Id> [--user name] [--out info.json]
 - 镜像库：`Ctrl+G`；导入：`Ctrl+Shift+I`
 - 不改动 `agentos-e2e-*` 虚拟机；不启用额外 Windows 功能 / 不循环提权重启
 
+## 下载
+
+本仓库目前没有已发布的 GitHub Release 安装包。请从源码运行。GitHub 自动生成的 Source code zip/tar 不算安装包。
+
+## 界面截图
+
+仓库里目前还没有已提交的真实产品界面截图（图标、logo 或品牌图不算）。请不要把下列预留路径当成已经存在的图片去引用（避免破链）。待在真实运行窗口中截取后放入：
+
+- `docs/screenshots/01-workbench.png`
+- `docs/screenshots/02-main-or-result.png`
+
+截图说明必须写明操作系统、软件版本、是否示例/演示数据，以及是否在 Windows 安装后截取。
+
 ## 构建
 
 ```text

@@ -10,6 +10,19 @@
 - 「基础环境」向导：RDP / OpenSSH、主机名、时区、本地用户脚本（密码只写入本机脚本目录，不写日志）。
 - 命令行：`WinVM.exe --list-ready`、`--connect-info` 输出 JSON，便于同机发现。
 
+## 下载
+
+本仓库目前没有已发布的 GitHub Release 安装包。请从源码运行。GitHub 自动生成的 Source code zip/tar 不算安装包。
+
+## 界面截图
+
+仓库里目前还没有已提交的真实产品界面截图（图标、logo 或品牌图不算）。请不要把下列预留路径当成已经存在的图片去引用（避免破链）。待在真实运行窗口中截取后放入：
+
+- `docs/screenshots/01-workbench.png`
+- `docs/screenshots/02-main-or-result.png`
+
+截图说明必须写明操作系统、软件版本、是否示例/演示数据，以及是否在 Windows 安装后截取。
+
 ## 技术栈
 
 - C# / .NET 8（`net8.0`）
@@ -53,6 +66,19 @@ dotnet run --project WinVM.csproj
 - Connect via vmconnect / Enhanced Session, guest RDP, or SSH; connection info can be copied.
 - A “baseline environment” wizard for RDP / OpenSSH, hostname, timezone, and local-user scripts (passwords are written only to local script folders, not logs).
 - CLI: `WinVM.exe --list-ready` and `--connect-info` emit JSON for same-machine discovery.
+
+## Downloads
+
+This repository has no published GitHub Release installer. Run it from source. The automatic Source code zip/tar from GitHub is not an installer.
+
+## Screenshots
+
+No real product-window screenshot has been committed yet (icons, logos, and brand art do not count). Do not add markdown image links to the reserved paths below until the files exist (that would be a broken link). After a live capture, place:
+
+- `docs/screenshots/01-workbench.png`
+- `docs/screenshots/02-main-or-result.png`
+
+Captions must state the OS, version, whether the data is sample/demo, and whether the shot was taken after a Windows install.
 
 ## Tech stack
 
